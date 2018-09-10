@@ -23,6 +23,7 @@ using Amazon.Runtime.Internal.Util;
 using Amazon.XRay.Recorder.Core.Internal.Entities;
 using Amazon.XRay.Recorder.Core.Internal.Utils;
 using System.Threading.Tasks;
+using EndPoint = Amazon.XRay.Recorder.Core.Internal.Utils.EndPoint;
 
 namespace Amazon.XRay.Recorder.Core.Internal.Emitters
 {
@@ -49,13 +50,18 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
             _marshaller = marshaller;
             _udpClient = new UdpClient();
             DaemonConfig daemonEndPoint = DaemonConfig.GetEndPoint();
-            EndPoint = daemonEndPoint.UDPEndpoint;
+            _endPoint = daemonEndPoint.UDPEndpoint;
         }
 
+        private EndPoint _endPoint;
+            
         /// <summary>
         /// Gets the end point to daemon.
         /// </summary>
-        public IPEndPoint EndPoint { get; private set; }
+        public IPEndPoint EndPoint {
+            get { return _endPoint.GetIPEndPoint(); }
+            
+        }
 
         /// <summary>
         /// Send segment to local daemon
@@ -143,7 +149,7 @@ namespace Amazon.XRay.Recorder.Core.Internal.Emitters
         private void SetEndPointOrDefault(string daemonAddress)
         {
             DaemonConfig daemonEndPoint = DaemonConfig.GetEndPoint(daemonAddress);
-            EndPoint = daemonEndPoint.UDPEndpoint;
+            _endPoint = daemonEndPoint.UDPEndpoint;
         }
     }
 }
