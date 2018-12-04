@@ -24,7 +24,13 @@ namespace Amazon.XRay.Recorder.Handlers.System.Net.Utils
         /// <param name="request">An instance of <see cref="HttpRequestMessage"/></param>
         internal static void ProcessRequest(HttpRequestMessage request)
         {
-            ProcessRequest(request.RequestUri, request.Method.Method, header => request.Headers.Add(TraceHeader.HeaderKey, header));
+            ProcessRequest(request.RequestUri, request.Method.Method, AddOrReplaceHeader);
+
+            void AddOrReplaceHeader(string header)
+            {
+                request.Headers.Remove(TraceHeader.HeaderKey);
+                request.Headers.Add(TraceHeader.HeaderKey, header);
+            }
         }
 
         /// <summary>
@@ -60,7 +66,7 @@ namespace Amazon.XRay.Recorder.Handlers.System.Net.Utils
                 AWSXRayRecorder.Instance.AddHttpInformation("request", requestInformation);
             }
 
-            if (TraceHeader.TryParse(TraceContext.GetEntity(), out var header))
+            if (TraceHeader.TryParse(AWSXRayRecorder.Instance.TraceContext.GetEntity(), out var header))
             {
                 addHeaderAction(header.ToString());
             }

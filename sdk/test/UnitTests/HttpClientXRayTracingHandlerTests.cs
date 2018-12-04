@@ -52,10 +52,10 @@ namespace Amazon.XRay.Recorder.UnitTests
             var request = new HttpRequestMessage(HttpMethod.Get, URL);
             var response = await _httpClient.SendAsync(request);
             
-            var segment = TraceContext.GetEntity();
+            var segment = AWSXRayRecorder.Instance.TraceContext.GetEntity();
             AWSXRayRecorder.Instance.EndSegment();
 
-            var traceHeader = request.Headers.GetValues(TraceHeader.HeaderKey).FirstOrDefault();
+            var traceHeader = request.Headers.GetValues(TraceHeader.HeaderKey).SingleOrDefault();
             Assert.IsNotNull(traceHeader);
 
             var requestInfo = segment.Subsegments[0].Http["request"] as Dictionary<string, object>;
@@ -74,10 +74,10 @@ namespace Amazon.XRay.Recorder.UnitTests
             var request = new HttpRequestMessage(HttpMethod.Get, URL404);
             var response = await _httpClient.SendAsync(request);
             
-            var segment = TraceContext.GetEntity();
+            var segment = AWSXRayRecorder.Instance.TraceContext.GetEntity();
             AWSXRayRecorder.Instance.EndSegment();
 
-            var traceHeader = request.Headers.GetValues(TraceHeader.HeaderKey).FirstOrDefault();
+            var traceHeader = request.Headers.GetValues(TraceHeader.HeaderKey).SingleOrDefault();
             Assert.IsNotNull(traceHeader);
 
             var requestInfo = segment.Subsegments[0].Http["request"] as Dictionary<string, object>;
